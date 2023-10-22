@@ -89,46 +89,59 @@ class Program
 
     void OnExecute()
     {
-        string[] lines = File.ReadAllLines(inputFile);
-
-        string[] firstLine = lines[0].Split();
-        int n = int.Parse(firstLine[0]);
-        int m = int.Parse(firstLine[1]);
-        
-        
-        // Initialize the matrix
-        int[,] matr = new int[n,m];
-        for (int i = 0; i < n; i++)
+        try
         {
-            string[] temp = lines[i + 1].Split();
-            for (int j = 0; j < m; j++)
+            string[] lines = File.ReadAllLines(inputFile);
+            string[] firstLine = lines[0].Split();
+            int n = int.Parse(firstLine[0]);
+            int m = int.Parse(firstLine[1]);
+            if (n > 100 || m > 100)
             {
-                
-                matr[i,j] = int.Parse(temp[j]);
+                Console.WriteLine("Input sizes are too high");
+                return;
             }
-        }
-        
-        //int[,] matr = { { 1, 2, 3, 1, 10 }, { 1, 4, 3, 10, 10 }, { 1, 5, 5, 5, 5 }, { 6, 6, 6, 6, 6 } };
-        List<Tuple<int, int>> badList = new List<Tuple<int, int>>();
-        int counter = 0;
 
-        for (int i = 0; i < matr.GetLength(0); i++)
-        {
-            for (int j = 0; j < matr.GetLength(1); j++)
+            // Initialize the matrix
+            int[,] matr = new int[n, m];
+            for (int i = 0; i < n; i++)
             {
-                int st = GetCellStatus(matr, i, j, badList);
-                switch (st)
+                string[] temp = lines[i + 1].Split();
+                for (int j = 0; j < m; j++)
                 {
-                    case -1:
-                        counter++;
-                        break;
-                    case 0:
-                        badList.Add(new Tuple<int, int>(i, j));
-                        break;
+                    matr[i, j] = int.Parse(temp[j]);
+                    if (matr[i, j] > 10000)
+                    {
+                        Console.WriteLine("One of squares are too big");
+                        return;
+                    }
                 }
             }
 
+            List<Tuple<int, int>> badList = new List<Tuple<int, int>>();
+            int counter = 0;
+
+            for (int i = 0; i < matr.GetLength(0); i++)
+            {
+                for (int j = 0; j < matr.GetLength(1); j++)
+                {
+                    int st = GetCellStatus(matr, i, j, badList);
+                    switch (st)
+                    {
+                        case -1:
+                            counter++;
+                            break;
+                        case 0:
+                            badList.Add(new Tuple<int, int>(i, j));
+                            break;
+                    }
+                }
+
+            }
+            File.WriteAllText(outputFile, counter.ToString());
         }
-        File.WriteAllText(outputFile,counter.ToString());
+        catch(Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
     }
 }
